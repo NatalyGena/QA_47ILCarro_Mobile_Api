@@ -1,4 +1,44 @@
 package api_rest;
 
-public class CarController {
+import dto.CarDto;
+import dto.RegistrationBodyDTo;
+import dto.TokenDto;
+import interfaces.BaseApi;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import static io.restassured.RestAssured.given;
+public class CarController implements BaseApi {
+    public TokenDto tokenDto;
+
+
+    @BeforeSuite
+    public void login() {
+        RegistrationBodyDTo user = RegistrationBodyDTo.builder()
+                .username("nataly_gena476@gmail.com")
+                .password("ASD22zxc!")
+                .build();
+        tokenDto =given()
+                .body(user)
+                .contentType(ContentType.JSON)
+                .when()
+                .post(BASE_URL+LOGIN_URL)
+                .thenReturn()
+                .getBody()
+                .as(TokenDto.class);
+        System.out.println(tokenDto.getAccessToken());
+
+    }
+public Response addNewCar(CarDto car){
+
+     return given()
+             .body(car)
+             .contentType(ContentType.JSON)
+             .header("Authorization",tokenDto.getAccessToken())
+             .when()
+             .post(BASE_URL+ADD_NEW_CAR_URL)
+             .thenReturn();
+
+}
 }
